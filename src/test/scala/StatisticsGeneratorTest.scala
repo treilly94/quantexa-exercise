@@ -1,7 +1,6 @@
 import StatisticsGenerator._
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.scalatest.{FlatSpec, Matchers}
-import org.apache.spark.sql.functions.col
 
 class StatisticsGeneratorTest extends FlatSpec with Matchers {
 
@@ -32,7 +31,7 @@ class StatisticsGeneratorTest extends FlatSpec with Matchers {
     val outDf: DataFrame = orderCols(
       groupAndSum(inDf, List("transactionDay"), "transactionAmount", "totalValue")
     )
-        .orderBy("transactionDay")
+      .orderBy("transactionDay")
     outDf.show()
 
     outDf.collectAsList() should be(expDf.collectAsList())
