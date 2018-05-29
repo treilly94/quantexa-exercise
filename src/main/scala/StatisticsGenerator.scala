@@ -1,5 +1,5 @@
+import org.apache.spark.sql.functions.{mean, sum}
 import org.apache.spark.sql.{DataFrame, SparkSession}
-import org.apache.spark.sql.functions.sum
 
 object StatisticsGenerator {
   def main(args: Array[String]): Unit = {
@@ -9,6 +9,8 @@ object StatisticsGenerator {
     val df: DataFrame = spark.read.option("header", "true").csv("./src/main/resources/transactions.txt")
     // Question1
     groupAndSum(df, List("transactionDay"), "transactionAmount", "totalValue").show()
+    // Question2
+    groupAndMean(df, List("accountId", "category"), "transactionAmount", "totalValue").show()
   }
 
   def getSparkSession(name: String): SparkSession = {
@@ -21,5 +23,9 @@ object StatisticsGenerator {
 
   def groupAndSum(df: DataFrame, partCols: List[String], sumCol: String, name: String): DataFrame = {
     df.groupBy(partCols.head, partCols.tail: _*).agg(sum(sumCol).alias(name))
+  }
+
+  def groupAndMean(df: DataFrame, partCols: List[String], meanCol: String, name: String): DataFrame = {
+    df.groupBy(partCols.head, partCols.tail: _*).agg(mean(meanCol).alias(name))
   }
 }
