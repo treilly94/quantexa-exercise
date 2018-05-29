@@ -6,7 +6,10 @@ object StatisticsGenerator {
     // Preparation
     val spark: SparkSession = getSparkSession("Statistics Generator")
     spark.sparkContext.setLogLevel("ERROR")
-    val df: DataFrame = spark.read.option("header", "true").csv("./src/main/resources/transactions.txt")
+    val df: DataFrame = spark.read
+      .option("header", "true")
+      .option("inferSchema", "true")
+      .csv("./src/main/resources/transactions.txt")
     // Question1
     groupAndSum(df, List("transactionDay"), "transactionAmount", "totalValue").show()
     // Question2
