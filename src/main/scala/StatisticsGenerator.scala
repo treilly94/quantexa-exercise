@@ -1,5 +1,5 @@
-import org.apache.spark.sql.expressions.Window
-import org.apache.spark.sql.functions.{lag, mean, sum}
+import org.apache.spark.sql.expressions.{Window, WindowSpec}
+import org.apache.spark.sql.functions.{array, lag, mean, sum}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 object StatisticsGenerator {
@@ -37,15 +37,16 @@ object StatisticsGenerator {
 
   def lastFiveStats(df: DataFrame): DataFrame = {
     // Lag
-    val w = Window.partitionBy("accountId").orderBy("transactionDay")
-    df.withColumn("lag1", lag("transactionAmount", 1).over(w))
-      .withColumn("lag2", lag("transactionAmount", 2).over(w))
-      .withColumn("lag3", lag("transactionAmount", 3).over(w))
-      .withColumn("lag4", lag("transactionAmount", 4).over(w))
-      .withColumn("lag5", lag("transactionAmount", 5).over(w))
+    val w: WindowSpec = Window.partitionBy("accountId").orderBy("transactionDay")
+    val dfLagged: DataFrame =
+      df.withColumn("lagged", array(lag("transactionAmount", 1).over(w),
+        lag("transactionAmount", 2).over(w),
+        lag("transactionAmount", 3).over(w),
+        lag("transactionAmount", 4).over(w),
+        lag("transactionAmount", 5).over(w)))
 
     // Max
-
+    dfLagged
     // Mean
 
     // Total for “AA”, “CC” and “FF”
