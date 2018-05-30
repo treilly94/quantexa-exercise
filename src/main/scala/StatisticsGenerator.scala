@@ -68,7 +68,7 @@ object StatisticsGenerator {
 
     // Apply functions and drop extra columns
     dfLagged.withColumn("Maximum", maxUDF(col(lAmount)))
-      .withColumn("Average", meanUDF(col(lAmount)))
+      .withColumn("Average", round(meanUDF(col(lAmount)), 3))
       .withColumn("AA Total Value", sumCatUDF(col(lAmount), col(lCat), lit("AA")))
       .withColumn("CC Total Value", sumCatUDF(col(lAmount), col(lCat), lit("CC")))
       .withColumn("FF Total Value", sumCatUDF(col(lAmount), col(lCat), lit("FF")))
