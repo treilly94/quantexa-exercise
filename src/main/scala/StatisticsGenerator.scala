@@ -1,6 +1,6 @@
 import org.apache.spark.sql.expressions.{Window, WindowSpec}
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.{DataFrame, Row, SparkSession}
+import org.apache.spark.sql.{DataFrame, SparkSession}
 
 object StatisticsGenerator {
   def main(args: Array[String]): Unit = {
@@ -38,20 +38,25 @@ object StatisticsGenerator {
   }
 
   def lastFiveStats(df: DataFrame): DataFrame = {
+
     // Lag
     val w: WindowSpec = Window.partitionBy("accountId").orderBy("transactionDay")
     val dfLagged: DataFrame =
-      df.withColumn("lagged", array(lag("transactionAmount", 1).over(w),
-        lag("transactionAmount", 2).over(w),
-        lag("transactionAmount", 3).over(w),
-        lag("transactionAmount", 4).over(w),
-        lag("transactionAmount", 5).over(w)))
+      df.withColumn("lagged", array(lag("transactionAmount", 1, null).over(w),
+        lag("transactionAmount", 2, null).over(w),
+        lag("transactionAmount", 3, null).over(w),
+        lag("transactionAmount", 4, null).over(w),
+        lag("transactionAmount", 5, null).over(w)))
 
     // Max
-    val maxUDF = udf {a: Seq[Double] => a.max}
-    dfLagged.withColumn("Maximum", maxUDF(col("lagged")))
+    val maxUDF = udf { s: Seq[Double] => s.max }
     // Mean
-
+    val meanUDF = udf { s: Seq[Double] => s.sum / s.count(_ > 0) }
     // Total for “AA”, “CC” and “FF”
+
+    dfLagged.withColumn("Maximum", maxUDF(col("lagged")))
+      .withColumn("Average", meanUDF(col("lagged")))
+
+
   }
 }
