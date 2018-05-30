@@ -68,6 +68,7 @@ class StatisticsGeneratorTest extends FlatSpec with Matchers {
       .orderBy("accountId", "transactionDay")
     outDf.show()
 
+    // TODO Replace NaN with null in Average column as they are making the tests fail
     outDf.collectAsList() should be(expDf.collectAsList())
   }
 
