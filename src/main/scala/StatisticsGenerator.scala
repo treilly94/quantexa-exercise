@@ -63,12 +63,12 @@ object StatisticsGenerator {
     val meanUDF = udf { s: Seq[Double] => s.sum / s.count(_ > 0) }
     // Total for “AA”, “CC” and “FF”
     val sumCatUDF = udf {
-      (amounts: Seq[Double], cat: Seq[String]) => amounts.zip(cat).filter(_._2 == "AA").map { case (x, y) => x }.sum
+      (amounts: Seq[Double], cat: Seq[String], target: String) => amounts.zip(cat).filter(_._2 == target).map { case (x, y) => x }.sum
     }
 
     dfLagged.withColumn("Maximum", maxUDF(col(lAmount)))
       .withColumn("Average", meanUDF(col(lAmount)))
-      .withColumn("AA Total Value", sumCatUDF(col(lAmount), col(lCat)))
+      .withColumn("AA Total Value", sumCatUDF(col(lAmount), col(lCat), lit("AA")))
 
 
   }
