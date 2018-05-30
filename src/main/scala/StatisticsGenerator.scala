@@ -1,5 +1,5 @@
 import org.apache.spark.sql.expressions.{Window, WindowSpec}
-import org.apache.spark.sql.functions.{array, lag, mean, sum}
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 object StatisticsGenerator {
@@ -29,6 +29,7 @@ object StatisticsGenerator {
 
   def groupAndSum(df: DataFrame, partCols: List[String], sumCol: String, name: String): DataFrame = {
     df.groupBy(partCols.head, partCols.tail: _*).agg(sum(sumCol).alias(name))
+      .withColumn(name, round(col(name), 2))
   }
 
   def groupAndMean(df: DataFrame, partCols: List[String], meanCol: String, name: String): DataFrame = {
