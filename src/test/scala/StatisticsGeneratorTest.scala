@@ -54,4 +54,21 @@ class StatisticsGeneratorTest extends FlatSpec with Matchers {
     outDf.collectAsList() should be(expDf.collectAsList())
   }
 
+  "LastFiveStats" should "return the expected values" in {
+    println("Input Data")
+    val inDf: DataFrame = readJSON("./src/test/resources/inputs/question3.json")
+    inDf.show()
+    println("Expected Data")
+    val expDf: DataFrame = readJSON("./src/test/resources/expected/question3.json")
+    expDf.show()
+    println("Output Data")
+    val outDf: DataFrame = orderCols(
+      lastFiveStats(inDf)
+    )
+      .orderBy("transactionDay")
+    outDf.show()
+
+    outDf.collectAsList() should be(expDf.collectAsList())
+  }
+
 }
