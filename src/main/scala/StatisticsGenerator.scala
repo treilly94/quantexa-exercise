@@ -34,6 +34,7 @@ object StatisticsGenerator {
 
   def groupAndMean(df: DataFrame, partCols: List[String], meanCol: String, name: String): DataFrame = {
     df.groupBy(partCols.head, partCols.tail: _*).agg(mean(meanCol).alias(name))
+      .withColumn(name, round(col(name), 2))
   }
 
   def lastFiveStats(df: DataFrame): DataFrame = {
