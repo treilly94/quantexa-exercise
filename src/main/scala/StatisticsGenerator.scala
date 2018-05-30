@@ -66,6 +66,7 @@ object StatisticsGenerator {
       (amounts: Seq[Double], cat: Seq[String], target: String) => amounts.zip(cat).filter(_._2 == target).map { case (x, y) => x }.sum
     }
 
+    // Apply functions and drop extra columns
     dfLagged.withColumn("Maximum", maxUDF(col(lAmount)))
       .withColumn("Average", meanUDF(col(lAmount)))
       .withColumn("AA Total Value", sumCatUDF(col(lAmount), col(lCat), lit("AA")))
