@@ -69,7 +69,12 @@ object StatisticsGenerator {
     dfLagged.withColumn("Maximum", maxUDF(col(lAmount)))
       .withColumn("Average", meanUDF(col(lAmount)))
       .withColumn("AA Total Value", sumCatUDF(col(lAmount), col(lCat), lit("AA")))
-
-
+      .withColumn("CC Total Value", sumCatUDF(col(lAmount), col(lCat), lit("CC")))
+      .withColumn("FF Total Value", sumCatUDF(col(lAmount), col(lCat), lit("FF")))
+      .drop(lAmount)
+      .drop(lCat)
+      .drop("category")
+      .drop("transactionAmount")
+      .drop("transactionId")
   }
 }
