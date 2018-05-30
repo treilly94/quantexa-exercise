@@ -39,23 +39,36 @@ object StatisticsGenerator {
 
   def lastFiveStats(df: DataFrame): DataFrame = {
 
+    // Temp columns
+    val lAmount: String = "lAmount"
+    val lCat: String = "lCat"
+
     // Lag
     val w: WindowSpec = Window.partitionBy("accountId").orderBy("transactionDay")
     val dfLagged: DataFrame =
-      df.withColumn("lagged", array(lag("transactionAmount", 1, null).over(w),
+      df.withColumn(lAmount, array(lag("transactionAmount", 1, null).over(w),
         lag("transactionAmount", 2, null).over(w),
         lag("transactionAmount", 3, null).over(w),
         lag("transactionAmount", 4, null).over(w),
         lag("transactionAmount", 5, null).over(w)))
+        .withColumn(lCat, array(lag("category", 1, null).over(w),
+          lag("category", 2, null).over(w),
+          lag("category", 3, null).over(w),
+          lag("category", 4, null).over(w),
+          lag("category", 5, null).over(w)))
 
     // Max
     val maxUDF = udf { s: Seq[Double] => s.max }
     // Mean
     val meanUDF = udf { s: Seq[Double] => s.sum / s.count(_ > 0) }
     // Total for “AA”, “CC” and “FF”
+    val sumCatUDF = udf {
+      (amounts: Seq[Double], cat: Seq[String]) => amounts.zip(cat).filter(_._2 == "AA").map { case (x, y) => x }.sum
+    }
 
-    dfLagged.withColumn("Maximum", maxUDF(col("lagged")))
-      .withColumn("Average", meanUDF(col("lagged")))
+    dfLagged.withColumn("Maximum", maxUDF(col(lAmount)))
+      .withColumn("Average", meanUDF(col(lAmount)))
+      .withColumn("AA Total Value", sumCatUDF(col(lAmount), col(lCat)))
 
 
   }
