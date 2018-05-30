@@ -65,7 +65,7 @@ class StatisticsGeneratorTest extends FlatSpec with Matchers {
     val outDf: DataFrame = orderCols(
       lastFiveStats(inDf)
     )
-      .orderBy("transactionDay")
+      .orderBy("accountId", "transactionDay")
     outDf.show()
 
     outDf.collectAsList() should be(expDf.collectAsList())
