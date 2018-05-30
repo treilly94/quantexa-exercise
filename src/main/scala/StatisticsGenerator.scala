@@ -1,6 +1,6 @@
 import org.apache.spark.sql.expressions.{Window, WindowSpec}
 import org.apache.spark.sql.functions._
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 
 object StatisticsGenerator {
   def main(args: Array[String]): Unit = {
@@ -48,7 +48,8 @@ object StatisticsGenerator {
         lag("transactionAmount", 5).over(w)))
 
     // Max
-    dfLagged
+    val maxUDF = udf {a: Seq[Double] => a.max}
+    dfLagged.withColumn("Maximum", maxUDF(col("lagged")))
     // Mean
 
     // Total for “AA”, “CC” and “FF”
