@@ -29,12 +29,12 @@ object StatisticsGenerator {
 
   def groupAndSum(df: DataFrame, partCols: List[String], sumCol: String, name: String): DataFrame = {
     df.groupBy(partCols.head, partCols.tail: _*).agg(sum(sumCol).alias(name))
-      .withColumn(name, round(col(name), 2))
+      .withColumn(name, round(col(name), 2)) // Rounding added because of floating point like error
   }
 
   def groupAndMean(df: DataFrame, partCols: List[String], meanCol: String, name: String): DataFrame = {
     df.groupBy(partCols.head, partCols.tail: _*).agg(mean(meanCol).alias(name))
-      .withColumn(name, round(col(name), 2))
+      .withColumn(name, round(col(name), 2)) // Rounding added because of floating point like error
   }
 
   def lastFiveStats(df: DataFrame): DataFrame = {
