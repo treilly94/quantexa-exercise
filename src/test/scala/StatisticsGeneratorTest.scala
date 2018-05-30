@@ -37,4 +37,21 @@ class StatisticsGeneratorTest extends FlatSpec with Matchers {
     outDf.collectAsList() should be(expDf.collectAsList())
   }
 
+  "GroupAndMean" should "return the expected values" in {
+    println("Input Data")
+    val inDf: DataFrame = readJSON("./src/test/resources/inputs/question2.json")
+    inDf.show()
+    println("Expected Data")
+    val expDf: DataFrame = readJSON("./src/test/resources/expected/question2.json")
+    expDf.show()
+    println("Output Data")
+    val outDf: DataFrame = orderCols(
+      groupAndMean(inDf, List("transactionDay"), "transactionAmount", "totalValue")
+    )
+      .orderBy("transactionDay")
+    outDf.show()
+
+    outDf.collectAsList() should be(expDf.collectAsList())
+  }
+
 }
