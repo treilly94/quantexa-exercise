@@ -39,17 +39,18 @@ object StatisticsGenerator {
     // Window the data
     val windowedData: Map[String, List[List[Transaction]]] = data.groupBy(_.accountId) // Group by account ID
       .mapValues(_.sortWith(_.transactionDay > _.transactionDay)) // Sort by day from high to low
-      .mapValues(_.sliding(5, 1).toList) // break into windows of 5 days
+      .mapValues(_.sliding(6, 1).toList) // break into windows of 5 previous days and current day
 
     windowedData.flatMap { group =>
       // For each window get the statistics and create a new stats object
       group._2.map { window =>
         val day: Int = window.head.transactionDay
-        val max: Double = window.map(_.transactionAmount).max
-        val mean: Double = window.map(_.transactionAmount).sum / window.map(_.transactionAmount).size
-        val aa: Double = window.filter(_.category == "AA").map(_.transactionAmount).sum
-        val cc: Double = window.filter(_.category == "CC").map(_.transactionAmount).sum
-        val ff: Double = window.filter(_.category == "FF").map(_.transactionAmount).sum
+        val pFive: List[Transaction] = window.drop(1) // Remove the first value so that just the previous 5 are left
+      val max: Double = pFive.map(_.transactionAmount).max
+        val mean: Double = pFive.map(_.transactionAmount).sum / pFive.map(_.transactionAmount).size
+        val aa: Double = pFive.filter(_.category == "AA").map(_.transactionAmount).sum
+        val cc: Double = pFive.filter(_.category == "CC").map(_.transactionAmount).sum
+        val ff: Double = pFive.filter(_.category == "FF").map(_.transactionAmount).sum
 
         Stats(day, group._1, max, mean, aa, cc, ff)
       }
