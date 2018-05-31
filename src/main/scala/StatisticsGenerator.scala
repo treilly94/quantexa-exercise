@@ -5,11 +5,11 @@ object StatisticsGenerator {
     // Read data
     val data: List[Transaction] = csvParser("./src/main/resources/transactions.txt")
     println("======================Question1==============================")
-    data.foreach(println)
-    println("======================Question2==============================")
     groupAndSum(data).foreach(println)
-    println("======================Question3==============================")
+    println("======================Question2==============================")
     groupAndMean(data).foreach(println)
+    println("======================Question3==============================")
+    lastFiveStats(data)
   }
 
   def csvParser(fileName: String): List[Transaction] = {
@@ -33,6 +33,10 @@ object StatisticsGenerator {
       .mapValues(_.map(_.transactionAmount)) // Take only the transaction amounts within each group
       .mapValues(v => v.sum / v.size) // Divide the sum of the values by the number of values
     )
+  }
+
+  def lastFiveStats(data: List[Transaction]) = {
+
   }
 
   case class Transaction(transactionId: String,
