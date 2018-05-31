@@ -36,9 +36,28 @@ object StatisticsGenerator {
   }
 
   def lastFiveStats(data: List[Transaction]) = {
-    data.groupBy(_.accountId) // Group by account ID
+    // Window the data
+    val windowedData: Map[String, List[List[Transaction]]] = data.groupBy(_.accountId) // Group by account ID
       .mapValues(_.sortWith(_.transactionDay > _.transactionDay)) // Sort by day from high to low
       .mapValues(_.sliding(5, 1).toList) // break into windows of 5 days
+
+    // For each group get the ID and the windows
+    windowedData.map { group =>
+      val accountId: String = group._1 // Get account id
+    val windows: List[List[Transaction]] = group._2 // Get list of windows
+
+      // For each window get the statistics and create a new stats object
+      windows.map { window =>
+        val day: Int = window.head.transactionDay
+        val max: Double = window.map(_.transactionAmount).max
+        val mean: Double = window.map(_.transactionAmount).sum / window.map(_.transactionAmount).size
+        val aa: Double = window.filter(_.category == "AA").map(_.transactionAmount).sum
+        val cc: Double = window.filter(_.category == "CC").map(_.transactionAmount).sum
+        val ff: Double = window.filter(_.category == "FF").map(_.transactionAmount).sum
+
+        Stats(day, accountId, max, mean, aa, cc, ff)
+      }
+    }.flatten
   }
 
   case class Transaction(transactionId: String,
@@ -46,5 +65,14 @@ object StatisticsGenerator {
                          transactionDay: Int,
                          category: String,
                          transactionAmount: Double)
+
+  case class Stats(Day: Int,
+                   AccountID: String,
+                   Maximum: Double,
+                   Average: Double,
+                   AATotalValue: Double,
+                   CCTotalValue: Double,
+                   FFTotalValue: Double
+                  )
 
 }
