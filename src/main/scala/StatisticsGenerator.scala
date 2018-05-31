@@ -8,6 +8,8 @@ object StatisticsGenerator {
     data.foreach(println)
     println("======================Question2==============================")
     groupAndSum(data).foreach(println)
+    println("======================Question3==============================")
+    groupAndMean(data).foreach(println)
   }
 
   def csvParser(fileName: String): List[Transaction] = {
@@ -23,6 +25,14 @@ object StatisticsGenerator {
   def groupAndSum(data: List[Transaction]): Map[Int, Double] = {
     data.groupBy(_.transactionDay) // Generate a collection containing the transaction day and a list of all transactions under that day
       .mapValues(_.map(_.transactionAmount).sum) // Map the transactions within each list, Take only the amount and sum them
+  }
+
+  def groupAndMean(data: List[Transaction]): Map[String, Map[String, Double]] = {
+    data.groupBy(_.accountId) // Group by account ID
+      .mapValues(_.groupBy(_.category) // Within each group Group by category
+      .mapValues(_.map(_.transactionAmount)) // Take only the transaction amounts within each group
+      .mapValues(v => v.sum / v.size) // Divide the sum of the values by the number of values
+    )
   }
 
   case class Transaction(transactionId: String,
