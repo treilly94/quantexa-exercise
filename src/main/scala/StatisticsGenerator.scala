@@ -36,6 +36,8 @@ object StatisticsGenerator {
   }
 
   def lastFiveStats(data: List[Transaction]): List[Stats] = {
+    // This function will only return stats for windows that have a full 5 day history
+
     // Window the data
     val windowedData: Map[String, List[List[Transaction]]] = data.groupBy(_.accountId) // Group by account ID
       .mapValues(_.sortWith(_.transactionDay > _.transactionDay)) // Sort by day from high to low
