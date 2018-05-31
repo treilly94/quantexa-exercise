@@ -9,7 +9,7 @@ object StatisticsGenerator {
     println("======================Question2==============================")
     groupAndMean(data).foreach(println)
     println("======================Question3==============================")
-    lastFiveStats(data)
+    lastFiveStats(data).foreach(println)
   }
 
   def csvParser(fileName: String): List[Transaction] = {
@@ -36,7 +36,9 @@ object StatisticsGenerator {
   }
 
   def lastFiveStats(data: List[Transaction]) = {
-
+    data.groupBy(_.accountId) // Group by account ID
+      .mapValues(_.sortWith(_.transactionDay > _.transactionDay)) // Sort by day from high to low
+      .mapValues(_.sliding(5, 1).toList) // break into windows of 5 days
   }
 
   case class Transaction(transactionId: String,
