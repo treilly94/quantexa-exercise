@@ -46,7 +46,7 @@ object StatisticsGenerator {
       group._2.map { window =>
         val day: Int = window.head.transactionDay
         val pFive: List[Transaction] = window.drop(1) // Remove the first value so that just the previous 5 are left
-      val max: Double = pFive.map(_.transactionAmount).max
+        val max: Double = pFive.map(_.transactionAmount).max
         val mean: Double = pFive.map(_.transactionAmount).sum / pFive.map(_.transactionAmount).size
         val aa: Double = pFive.filter(_.category == "AA").map(_.transactionAmount).sum
         val cc: Double = pFive.filter(_.category == "CC").map(_.transactionAmount).sum
