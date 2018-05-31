@@ -35,7 +35,7 @@ object StatisticsGenerator {
     )
   }
 
-  def lastFiveStats(data: List[Transaction]) = {
+  def lastFiveStats(data: List[Transaction]): List[Stats] = {
     // Window the data
     val windowedData: Map[String, List[List[Transaction]]] = data.groupBy(_.accountId) // Group by account ID
       .mapValues(_.sortWith(_.transactionDay > _.transactionDay)) // Sort by day from high to low
@@ -53,7 +53,7 @@ object StatisticsGenerator {
 
         Stats(day, group._1, max, mean, aa, cc, ff)
       }
-    }
+    }.toList
   }
 
   case class Transaction(transactionId: String,
